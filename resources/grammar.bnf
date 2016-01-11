@@ -1,0 +1,6 @@
+program = statementList
+statementList = (statement '\n' statementList ) | (statement)
+statement = var_dec | eps
+var_dec  = (#'var\s+' ID)|(#'var\s+' ID #'\s+=\s+' number)
+ID = #'[_a-zA-Z][_a-zA-Z0-9]{0,30}'
+number = #'[0-9]+'
