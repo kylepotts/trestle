@@ -3,11 +3,27 @@
     [me.raynes.fs :refer [normalized]]))
 
 
+(defn tranform-numeric-term
+  ([number]5)
+  ([number op number]10))
+
+(defn transform-numeric-factor
+  [head & rest]
+  (if (= nil rest)
+   (let [factor-type (first head)]
+    (cond
+      (= :number factor-type)(read-string (second head))))
+   rest))
+
+
+
+
 (def transform-options
-  {})
+  {:numeric_factor transform-numeric-factor
+    :numeric_term tranform-numeric-term})
 
 (def parser
-  (insta/parser (clojure.java.io/resource "./grammar.bnf")))
+  (insta/parser (clojure.java.io/resource "grammar.bnf")))
 
 (defn parse [input]
  (->> (parser input) (insta/transform transform-options)))
@@ -15,7 +31,8 @@
 
 (defn open-and-parse-file [filename]
   (let [text (slurp (normalized filename))]
-   (println (parse text))))
+   (println (parse text))
+   (insta/visualize (parse text))))
 
 (defn repl []
   (do
