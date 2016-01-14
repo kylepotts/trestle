@@ -1,26 +1,12 @@
 (ns parser-play.core
   (:require [instaparse.core :as insta]
-    [me.raynes.fs :refer [normalized]]))
-
-
-(defn tranform-numeric-term
-  ([number]5)
-  ([number op number]10))
-
-(defn transform-numeric-factor
-  [head & rest]
-  (if (= nil rest)
-   (let [factor-type (first head)]
-    (cond
-      (= :number factor-type)(read-string (second head))))
-   rest))
-
-
-
+    [me.raynes.fs :refer [normalized]]
+    [numbers.transforms :refer [transform-numeric-factor tranform-numeric-exp tranform-numeric-term]]))
 
 (def transform-options
   {:numeric_factor transform-numeric-factor
-    :numeric_term tranform-numeric-term})
+    :numeric_term tranform-numeric-term
+    :numeric_exp tranform-numeric-exp})
 
 (def parser
   (insta/parser (clojure.java.io/resource "grammar.bnf")))
@@ -41,8 +27,6 @@
   (let [input (read-line)]
     (println (parse input))
     (recur)))
-
-
 
 
 (defn -main
