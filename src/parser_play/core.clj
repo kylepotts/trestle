@@ -3,10 +3,27 @@
     [me.raynes.fs :refer [normalized]]
     [numbers.transforms :refer [transform-numeric-factor tranform-numeric-exp tranform-numeric-term]]))
 
+
+(defn transform-empty-list []
+  [:list []])
+
+(defn transform-non-empty-list[ [_ [type value]] & rest]
+  (let [args (into [] rest) c (class args) s (into [] (conj args value))]
+   (if (= :list type)
+    ([:list [value s]])
+    ([:items s]))))
+
+
+
+
+
 (def transform-options
   {:numeric_factor transform-numeric-factor
     :numeric_term tranform-numeric-term
-    :numeric_exp tranform-numeric-exp})
+    :numeric_exp tranform-numeric-exp
+    :empty_list transform-empty-list
+    :non_empty_list transform-non-empty-list})
+
 
 (def parser
   (insta/parser (clojure.java.io/resource "grammar.bnf")))
