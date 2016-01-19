@@ -8,10 +8,9 @@
   [:list []])
 
 (defn transform-non-empty-list[l]
-  (let [v []]
-    (doseq [item l]
-      (println item)))
-  0)
+  (let [v [] items (subvec l 1)]
+   0))
+
 
 
 
@@ -23,7 +22,7 @@
     :numeric_term tranform-numeric-term
     :numeric_exp tranform-numeric-exp
     :empty_list transform-empty-list
-    :non_empty_list transform-non-empty-list})
+    :list_items transform-non-empty-list})
 
 
 (def parser
