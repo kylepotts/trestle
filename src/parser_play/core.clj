@@ -7,11 +7,12 @@
 (defn transform-empty-list []
   [:list []])
 
-(defn transform-non-empty-list[ [_ [type value]] & rest]
-  (let [args (into [] rest) c (class args) s (into [] (conj args value))]
-   (if (= :list type)
-    ([:list [value s]])
-    ([:items s]))))
+(defn transform-non-empty-list[l]
+  (let [v []]
+    (doseq [item l]
+      (println item)))
+  0)
+
 
 
 
