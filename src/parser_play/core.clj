@@ -1,15 +1,33 @@
 (ns parser-play.core
   (:require [instaparse.core :as insta]
     [me.raynes.fs :refer [normalized]]
+    [clojure.walk :refer [postwalk postwalk-demo]]
     [numbers.transforms :refer [transform-numeric-factor tranform-numeric-exp tranform-numeric-term]]))
 
 
 (defn transform-empty-list []
   [:list []])
 
+(defn is-leaf [x]
+  (println "leaf")
+  (println x)
+  (cond
+    (= :non_empty_list (first x)) true
+    (= :assignable_type (first x)) true
+   :else false))
+
+(defn get-children [x]
+  (println "children")
+  (println x)
+  (drop 1 x))
+
 (defn transform-non-empty-list[l]
-  (let [v [] items (subvec l 1)]
-   0))
+  (let [a (first (tree-seq :children :children l))]
+   (println "a")
+   (println a)
+   (for [item a]
+     ((println item)[]))
+   []))
 
 
 
