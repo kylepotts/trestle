@@ -2,19 +2,27 @@
   (:require [instaparse.core :as insta]
     [me.raynes.fs :refer [normalized]]
     [clojure.walk :refer [postwalk]]
+    [modules.modules :refer [create-module set-var]]
     [numbers.transforms :refer [transform-numeric-factor tranform-numeric-exp tranform-numeric-term]]
     [lists.transforms :refer [transform-empty-list transform-non-empty-list]]))
 
-(def vars (atom {}))
+
+(def vars(atom {}))
 
 (defn get-vars[id]
   (get @vars id))
 
+(def module-name(atom ""))
+
+(defn transform_def_module
+  [[type id]]
+  (swap! module-name (fn [a] id))
+  (create-module id)
+  [:def_module [type id]])
+
 (defn transform_let_dec
   [[t id] [type value]]
-  (let [var-table-entry {:type type :value value}]
-    (swap! vars assoc id var-table-entry)
-    (println @vars))
+  (set-var @module-name id type value)
   [:let_dec [t id] [type value]])
 
 (def transform-options
@@ -23,7 +31,9 @@
     :numeric_exp tranform-numeric-exp
     :empty_list transform-empty-list
     :list_init transform-non-empty-list
-    :let_dec transform_let_dec})
+    :let_dec transform_let_dec
+    :def_module transform_def_module})
+
 
 
 
