@@ -1,4 +1,5 @@
-(ns numbers.transforms)
+(ns numbers.transforms
+  (:require [parser-play.core :refer [get-vars]]))
 
 (defn tranform-numeric-exp
   ([number][:number number])
@@ -18,6 +19,10 @@
   [head & rest]
   (if (= nil rest)
    (let [factor-type (first head)]
+    (println factor-type)
     (cond
-      (= :number factor-type)(read-string (second head))))
+      (= :number factor-type)(read-string (second head))
+      (= :ID factor-type)(let [var get-vars (second head)]
+                          (println var))))
+
    rest))

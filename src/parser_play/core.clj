@@ -1,46 +1,31 @@
 (ns parser-play.core
   (:require [instaparse.core :as insta]
     [me.raynes.fs :refer [normalized]]
-    [clojure.walk :refer [postwalk postwalk-demo]]
-    [numbers.transforms :refer [transform-numeric-factor tranform-numeric-exp tranform-numeric-term]]))
+    [clojure.walk :refer [postwalk]]
+    [numbers.transforms :refer [transform-numeric-factor tranform-numeric-exp tranform-numeric-term]]
+    [lists.transforms :refer [transform-empty-list transform-non-empty-list]]))
 
+(def vars (atom {}))
 
-(defn transform-empty-list []
-  [:list []])
+(defn get-vars[id]
+  (get @vars id))
 
-(defn is-leaf [x]
-  (println "leaf")
-  (println x)
-  (cond
-    (= :non_empty_list (first x)) true
-    (= :assignable_type (first x)) true
-   :else false))
-
-(defn get-children [x]
-  (println "children")
-  (println x)
-  (drop 1 x))
-
-(defn transform-non-empty-list[l]
-  (let [a (first (tree-seq :children :children l))]
-   (println "a")
-   (println a)
-   (for [item a]
-     ((println item)[]))
-   []))
-
-
-
-
-
-
+(defn transform_let_dec
+  [[t id] [type value]]
+  (let [var-table-entry {:type type :value value}]
+    (swap! vars assoc id var-table-entry)
+    (println @vars))
+  [:let_dec [t id] [type value]])
 
 (def transform-options
   {:numeric_factor transform-numeric-factor
     :numeric_term tranform-numeric-term
     :numeric_exp tranform-numeric-exp
     :empty_list transform-empty-list
-    :list_items transform-non-empty-list})
+    :list_init transform-non-empty-list
+    :let_dec transform_let_dec})
+
+
 
 
 (def parser
@@ -51,9 +36,9 @@
 
 
 (defn open-and-parse-file [filename]
-  (let [text (slurp (normalized filename))]
-   (println (parse text))
-   (insta/visualize (parse text))))
+  (let [text (slurp (normalized filename)) parsed_text(parse text)]
+   (println parsed_text)
+   (insta/visualize parsed_text)))
 
 (defn repl []
   (do

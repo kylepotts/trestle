@@ -1,15 +1,16 @@
-program = statementList
-statementList = (statement <'\n'> statementList ) | (statement)
-statement = var_dec | let_dec| <eps>
-var_dec  = (<#'var\s+'> ID <#'\s*=\s*'> assignable_type)
-let_dec  = (#'let\s*' ID <#'\s*=\s*'> assignable_type)
-assignable_type = numeric_exp | list_init
+program = #'\s*'def_module statementList#'\s*'
+def_module = <'('> <#'def-module\s*'> ID <')\n'> | eps 
+<statementList> = (<#'\s*'> statement <#'\s*\n*'> statementList )|(statement)
+statement = let_dec| <eps>
+let_dec  = (<#'let\s*'> ID <#'\s*=\s*'> assignable_type)
+<assignable_type> = numeric_exp | list_init | string_lit
 numeric_exp = (numeric_exp #'\s*\+\s*' numeric_term)|(numeric_exp #'\s*-\s*' numeric_term)|(numeric_term)
 numeric_term = (numeric_term #'\s*\*\s*' numeric_factor)|(numeric_term #'\s*\/\s*' numeric_factor)|(numeric_factor)
 numeric_factor = ( <'('> numeric_exp <')'> )| ID | number
 list_init = <'['>list_items<']'>| empty_list
-list_items = eps|non_empty_list
+<list_items> = eps|non_empty_list
 empty_list = <#'\[\s*\]'>
-non_empty_list = assignable_type | assignable_type <#'\s*,\s*'> non_empty_list
+<non_empty_list> = assignable_type | assignable_type <#'\s*,\s*'> non_empty_list
+string_lit = #'\"(\\.|[^"])*\"'
 ID = #'[_a-zA-Z][_a-zA-Z0-9]{0,30}'
 number = #'-?[0-9]+'|#'[\-\+]?[0-9]*(\.[0-9]+)?'
