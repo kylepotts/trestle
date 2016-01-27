@@ -2,28 +2,20 @@
   (:require [instaparse.core :as insta]
     [me.raynes.fs :refer [normalized]]
     [clojure.walk :refer [postwalk]]
-    [modules.modules :refer [create-module set-var]]
+    [modules.modules :refer [load-module]]
+    [modules.transforms :refer [transform_let_dec transform_def_module]]
     [numbers.transforms :refer [transform-numeric-factor tranform-numeric-exp tranform-numeric-term]]
     [lists.transforms :refer [transform-empty-list transform-non-empty-list]]))
 
+(declare transform_imports)
+(declare transform-options)
 
-(def vars(atom {}))
+(def parser
+ (insta/parser (clojure.java.io/resource "grammar.bnf")))
 
-(defn get-vars[id]
-  (get @vars id))
-
-(def module-name(atom ""))
-
-(defn transform_def_module
-  [[type id]]
-  (swap! module-name (fn [a] id))
-  (create-module id)
-  [:def_module [type id]])
-
-(defn transform_let_dec
-  [[t id] [type value]]
-  (set-var @module-name id type value)
-  [:let_dec [t id] [type value]])
+(defn transform_imports
+  [head & rest]
+  (load-module (second head) parser transform-options))
 
 (def transform-options
   {:numeric_factor transform-numeric-factor
@@ -32,14 +24,12 @@
     :empty_list transform-empty-list
     :list_init transform-non-empty-list
     :let_dec transform_let_dec
-    :def_module transform_def_module})
+    :def_module transform_def_module
+    :imports transform_imports})
 
 
 
 
-
-(def parser
-  (insta/parser (clojure.java.io/resource "grammar.bnf")))
 
 (defn parse [input]
  (->> (parser input) (insta/transform transform-options)))

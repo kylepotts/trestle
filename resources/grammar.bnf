@@ -1,5 +1,7 @@
-program = #'\s*'def_module statementList#'\s*'
-def_module = <'('> <#'def-module\s*'> ID <')\n'> | eps 
+program = #'\s*'def_module (imports|eps) statementList#'\s*'
+def_module = <'('> <#'def-module\s*'> ID <')\n'> | eps
+imports = <'('> <#'\s*import\s*\[\s*'> import_items <#'\s*\]\s*\)'>
+<import_items> = ID | ID <#'\s*,\n\s*'> import_items
 <statementList> = (<#'\s*'> statement <#'\s*\n*'> statementList )|(statement)
 statement = let_dec| <eps>
 let_dec  = (<#'let\s*'> ID <#'\s*=\s*'> assignable_type)
